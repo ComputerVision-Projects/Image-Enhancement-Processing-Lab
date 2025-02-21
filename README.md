@@ -1,1 +1,1 @@
-# Image-Enhancement-Processing-Lab
+# Image-Enhancement-and-Processing-Lab
