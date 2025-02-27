@@ -7,8 +7,10 @@ from scipy.stats import gaussian_kde
 
 
 class HistogramOperations:
-    def __init__(self):
+    def __init__(self, widget1, widget2):
         self.image_data=None
+        self.widget1= widget1 #histogran widget
+        self.widget2= widget2 #distribution curve widget
         
     def get_histogram(self, img,):
         histogram, bins = np.histogram(img.flatten(), bins= 256)
@@ -29,8 +31,15 @@ class HistogramOperations:
         pdf= kde(x_values)
         return x_values, pdf
 
+    def show_plots(self, img_data=None):
+        if img_data is None:
+            img_data= self.image_data
+        bins, histogram= self.get_histogram(img_data)
+        self.plot_histogram(bins, histogram,self.widget1)
+        x_values, pdf= self.get_distribution_curve(bins, histogram)
+        self.plot_histogram(x_values, pdf, self.widget2, key_show='distribution')
 
-    def plot_histogram(self,  bins, histogram, parent_widget, key_show='histogram'):
+    def plot_histogram(self, bins, histogram, parent_widget, key_show='histogram'):
         figure= plt.Figure(figsize= (5,5))
         ax=figure.add_subplot(111)
 
@@ -52,9 +61,9 @@ class HistogramOperations:
         parent_widget.setLayout(layout)
 
         canvas.draw()
-
         
-    def equalize_histogram(self, histogram):
+    def equalize_histogram(self):
+        histogram, _ = self.get_histogram(self.image_data)
         #compute CDF from histogram
         histogram_cdf=  histogram.cumsum()
         min_cdf=histogram_cdf.min()
@@ -64,19 +73,23 @@ class HistogramOperations:
         cdf_equalized= cdf_equalized.astype(np.uint8)
         #each pixel value is mapped to its new value after equalization
         image_data_equalized= cdf_equalized[self.image_data] #numpy vectorization facilitate the mapping, it maps pixels all at once
+
+        self.show_plots(image_data_equalized)
         return image_data_equalized
 
-    def nomralize(self):
+    def normalize(self):
         image_data_normalized= (self.image_data- self.image_data.min())/(self.image_data.max() - self.image_data.min())
+        self.show_plots(image_data_normalized)
         return image_data_normalized
 
     def set_image(self, image_data):
         self.image_data= image_data
+    
 
     def global_threshold(self):
         return np.where(self.image_data > 170, 1, 0)
     
-    def local_threshold(self, block_size=11, C= 4): #adaptive thresholding
+    def local_threshold(self, block_size=11, C= 4): #adaptive thresholding, C-->Threshold Offset
         height, width = self.image_data.shape
         binary_image = np.zeros_like(self.image_data)  # Output image
 

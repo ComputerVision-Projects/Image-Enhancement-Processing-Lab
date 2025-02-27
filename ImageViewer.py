@@ -3,11 +3,13 @@ from PyQt5.QtGui import QImage, QPixmap
 import cv2
 import numpy as np
 
-class BrowseImage:
-    def __init__(self, input_view=None, output_view=None):
+class ImageViewer:
+    def __init__(self, histogram_cls, input_view=None, output_view=None):
         self._input_view = input_view
         self._output_view = output_view
-        self._image_path = None  
+        self._image_path = None
+        self.img_data=None 
+        self.histogram_cls = histogram_cls 
 
         self._input_scene = QGraphicsScene() if input_view else None
         self._output_scene = QGraphicsScene() if output_view else None
@@ -34,16 +36,19 @@ class BrowseImage:
     def browse_image(self, image_path):
         self._image_path = image_path  
         if self.check_extension():
-            gray_img = cv2.imread(self._image_path, cv2.IMREAD_GRAYSCALE)
-            if gray_img is None:
+            self.img_data = cv2.imread(self._image_path, cv2.IMREAD_GRAYSCALE)
+            if self.img_data is None:
                 print("Error loading image.")
                 return
             
-            self._processed_image = gray_img  
+            self._processed_image =  self.img_data  
+            self.histogram_cls.set_image(self.img_data)
+            self.histogram_cls.show_plots()
 
             
             if self._input_view:
-                self.display_image(gray_img, self._input_view)
+                self.display_image(self.img_data, self._input_view)
+        
 
     def display_output_image(self, processed_img=None):
         """ Displays the processed image in the output view when explicitly called. """
