@@ -23,8 +23,8 @@ class ColoredImg:
         cdf_R = histR.cumsum() / histR.sum()
         cdf_G = histG.cumsum() / histG.sum()
         cdf_B = histB.cumsum() / histB.sum()
-        Histogram.plot_histogram(binsR,cdf_R,wid4)
-        Histogram.plot_histogram(binsG,cdf_G,wid5)
-        Histogram.plot_histogram(binsB,cdf_B,wid6)
+        Histogram.plot_histogram(binsR,cdf_R,wid4, key_show='distribution')
+        Histogram.plot_histogram(binsG,cdf_G,wid5, key_show='distribution')
+        Histogram.plot_histogram(binsB,cdf_B,wid6, key_show='distribution')
     
     

@@ -10,7 +10,6 @@ class HistogramOperations:
     def __init__(self):
         self.image_data=None
         
-
     def get_histogram(self, img,):
         histogram, bins = np.histogram(img.flatten(), bins= 256)
         return bins, histogram
@@ -55,13 +54,13 @@ class HistogramOperations:
         canvas.draw()
 
         
-    def equalize_histogram(self):
+    def equalize_histogram(self, histogram):
         #compute CDF from histogram
-        histogram_cdf=  self.histogram.cumsum()
+        histogram_cdf=  histogram.cumsum()
         min_cdf=histogram_cdf.min()
         max_cdf= histogram_cdf.max()
         #map each pixel to new value from 0-255
-        cdf_equalized=( (histogram_cdf-min_cdf) /(max_cdf - min_cdf))*255
+        cdf_equalized=((histogram_cdf-min_cdf) /(max_cdf - min_cdf))*255
         cdf_equalized= cdf_equalized.astype(np.uint8)
         #each pixel value is mapped to its new value after equalization
         image_data_equalized= cdf_equalized[self.image_data] #numpy vectorization facilitate the mapping, it maps pixels all at once
@@ -74,7 +73,6 @@ class HistogramOperations:
     def set_image(self, image_data):
         self.image_data= image_data
 
-
     def global_threshold(self):
         return np.where(self.image_data > 170, 1, 0)
     
@@ -85,6 +83,7 @@ class HistogramOperations:
         # Ensure the image can be fully divided into blocks
         assert height % block_size == 0 and width % block_size == 0, \
             "Image dimensions must be divisible by the block size."
+        
         for i in range(0, height, block_size):
             for j in range(0, width, block_size):
                 block= self.image_data[i:i+block_size, j:j+block_size]
