@@ -25,10 +25,15 @@ class MainWindow(QMainWindow):
         self.normalize.clicked.connect(self.normalize())
         self.thresholdCombo = self.findChild(QComboBox, 'thresholdCombo')
         self.thresholdCombo.currentIndexChanged.connect(self.threshold)
-        self.threshold_offset= self.findChild(QSlider, 'threshold_offset')
-        self.block_size= self.findChild(QSpinBox, 'block_size')
+        self.threshold_offset= self.findChild(QSlider, 'thresholdOffset')
+        self.block_size= self.findChild(QSpinBox, 'blockSize')
         self.threshold_offset.valueChanged.connect(lambda: self.threshold(1))
         self.block_size.valueChanged.connect(lambda: self.threshold(1))
+        self.threshold_label = self.findChild(QLabel, "thresoldLabel")
+
+        self.spin_label = self.findChild(QLabel,"label1_2")
+        self.threshold_label = self.findChild(QLabel,"label_5")
+
 
         #joudy
         self.input_view = self.findChild(QGraphicsView, "inputGraphicsView")
@@ -79,9 +84,22 @@ class MainWindow(QMainWindow):
     
     def threshold(self, index):
         if index==0:
+            self.threshold_label.setVisible(True)
+            self.block_size.setVisible(True)
+            self.threshold_offset.setVisible(True)
+            self.spin_label.setVisible(True)
+            self.threshold_label.setVisible(True)
+
+            self.threshold_label.setText(str(self.threshold_offset.value()))
             threshold_img= self.hist_operations.global_threshold()
             self.viewer_instance.display_output_image(threshold_img)
         else:
+            self.threshold_label.setVisible(False)
+            self.block_size.setVisible(False)
+            self.threshold_offset.setVisible(False)
+            self.spin_label.setVisible(False)
+            self.threshold_label.setVisible(False)
+
             threshold_img= self.hist_operations.local_threshold(self.block_size.value(), self.threshold_offset.value())
             self.viewer_instance.display_output_image(threshold_img)
 
