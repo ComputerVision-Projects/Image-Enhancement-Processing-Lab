@@ -40,11 +40,14 @@ class HistogramOperations:
         self.plot_histogram(x_values, pdf, self.widget2, key_show='distribution')
 
     def plot_histogram(self, bins, histogram, parent_widget, key_show='histogram'):
+        if parent_widget is None:
+            print("Error: parent_widget is None. Cannot plot histogram.")
+            return
         figure= plt.Figure(figsize= (5,5))
         ax=figure.add_subplot(111)
 
         if key_show=='histogram':
-            ax.bar(bins, histogram, label='Histogram')
+            ax.bar(bins[:-1], histogram, label='Histogram')
         else:
             #bins and histogram here means bins and pdf values
             ax.plot(bins, histogram, color='red', linewidth=2, label="Interpolated Distribution")

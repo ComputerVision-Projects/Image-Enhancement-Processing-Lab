@@ -41,7 +41,11 @@ class ImageViewer:
                 print("Error loading image.")
                 return
             
-            self._processed_image =  self.img_data  
+            if len(self.img_data.shape) == 3:
+                print("Converting image to grayscale")
+                self.img_data = cv2.cvtColor(self.img_data, cv2.COLOR_BGR2GRAY)
+
+            self._processed_image = self.img_data  
             self.histogram_cls.set_image(self.img_data)
             self.histogram_cls.show_plots()
 
@@ -95,3 +99,6 @@ class ImageViewer:
             return False
         print("Valid image file extension.")
         return True
+    
+    def get_loaded_image(self):
+        return self.img_data
