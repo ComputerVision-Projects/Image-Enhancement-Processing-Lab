@@ -22,15 +22,19 @@ class HistogramOperations:
         # Compute bin centers
         # bin_centers = (bins[:-1] + bins[1:]) / 2
         # #creates a continuous function that can estimate histogram values at any intensity between 0-255
-        # interpolated_hist= interp1d(bin_centers, self.histogram, 'cubic', fill_value='extrapolate')
+        # interpolated_hist= interp1d(bin_centers, histogram, 'cubic', fill_value='extrapolate')
         # x_smooth = np.linspace(0, 255, 1000)  # Fine grid
         # y_smooth= interpolated_hist(x_smooth)
 
         #other method is KDE
-        kde= gaussian_kde(histogram)
-        x_values = np.linspace(min(bins), max(bins), 1000)
-        pdf= kde(x_values)
-        return x_values, pdf
+        # kde= gaussian_kde(histogram)
+        # x_values = np.linspace(min(bins), max(bins), 1000)
+        # pdf= kde(x_values)
+
+
+        #other method is CDF
+        cdf = histogram.cumsum() / histogram.sum()
+        return bins[:-1], cdf
 
     def show_plots(self, img_data=None):
         if img_data is None:
