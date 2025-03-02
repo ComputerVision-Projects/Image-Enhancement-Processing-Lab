@@ -2201,6 +2201,12 @@ color:#ffffff;
 
 }</string>
                            </property>
+                            <item>
+                            <property name="text">
+                             <string>choose filter</string>
+                            </property>
+                           </item>
+                           
                            <item>
                             <property name="text">
                              <string>High pass</string>
@@ -2380,6 +2386,12 @@ color:#ffffff;
 
 }</string>
                            </property>
+                            <item>
+                            <property name="text">
+                             <string>choose filter</string>
+                            </property>
+                           </item>
+                        
                            <item>
                             <property name="text">
                              <string>High pass</string>

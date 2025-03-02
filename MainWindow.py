@@ -9,7 +9,9 @@ from ImageViewer import ImageViewer
 from NoiseAdder import NoiseAdder
 from NoiseFilter import NoiseFilter
 from EdgeDetectors import EdgeDetectors 
-from ColoredImg import ColoredImg
+from HybridImage import HybridImage
+from PyQt5.QtGui import QImage, QPixmap
+from FrequencyFilter import FrequencyFilterfrom ColoredImg import ColoredImg
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -101,6 +103,55 @@ class MainWindow(QMainWindow):
         self.filter_slider2.setMaximum(10) 
         self.filter_slider2.setSingleStep(1) 
 
+
+
+
+
+
+
+    #hajar
+        self.initial_cutoff = 30
+        self.hybrid_processor = HybridImage() 
+        self.filtered_image1 = None
+        self.filtered_image2 = None
+        self.filterimage1 = self.findChild(QGraphicsView, "graphicsView1")
+        self.filterimage2 = self.findChild(QGraphicsView, "graphicsView2")
+        self.filterimage_Out = self.findChild(QGraphicsView, "graphicsView3")
+        self.filter_select1 = self.findChild(QComboBox, "frequencyCombo1")
+        self.filter_select2 = self.findChild(QComboBox, "frequencyCombo2")
+        
+        self.radiusSlider1 = self.findChild(QSlider, "radiusSlider1")
+        self.radiusSlider2 = self.findChild(QSlider, "radiusSlider2_2")
+        self.sliderLabel1 = self.findChild(QLabel, "sliderLabel1")
+        self.sliderLabel2 = self.findChild(QLabel, "sliderLabel2")
+        self.hybird_button= self.findChild(QPushButton, 'hybridButton')
+       
+
+    # Update label text to reflect the initial cutoff value
+        self.sliderLabel1.setText(f"Cutoff: {0 }")
+        self.sliderLabel2.setText(f"Cutoff: {0 }")
+
+
+
+        # Connect sliders to update function
+        self.radiusSlider1.valueChanged.connect(lambda: self.update_filter_cutoff(1))
+        self.radiusSlider2.valueChanged.connect(lambda: self.update_filter_cutoff(2))
+
+        if self.filter_select1:
+            self.filter_select1.currentIndexChanged.connect(lambda: self.set_initial_cutoff(1))
+
+        if self.filter_select2:
+            self.filter_select2.currentIndexChanged.connect(lambda: self.set_initial_cutoff(2))
+
+
+        self.region1Widget = self.findChild(QWidget, "region1Widget")
+        self.region2Widget = self.findChild(QWidget, "region2Widget")
+
+        self.image_viewer_freq1 = ImageViewer(self.hist_operations, self.filterimage1, self.filterimage_Out)
+        self.image_viewer_freq2 = ImageViewer(self.hist_operations, self.filterimage2, self.filterimage_Out)
+        self.hybird_button.clicked.connect(self.apply_hybird)
+
+       
     def on_tab_changed(self, index):
         if index == 0:
             self.viewer_instance = self.viewer_instance_tab1  # Use existing instance
@@ -241,6 +292,117 @@ class MainWindow(QMainWindow):
             return
         
         self.viewer_instance.display_image(filtered_image, self.output_view)
+
+
+
+
+
+
+         #hajar
+    def apply_frequency_filter(self, img_num,cutoff):
+        """Apply selected filter dynamically when an image is loaded or when the user changes the combo box."""
+        cutoff=cutoff
+        if img_num == 1:
+            img_data = self.image_viewer_freq1.get_loaded_image()
+            filter_type = self.get_selected_filter(self.filter_select1)
+
+            if img_data is not None:
+                filter_obj = FrequencyFilter(img_data)
+                self.filtered_image1, mask_image1 = filter_obj.apply_filter(filter_type, cutoff)
+                self.image_viewer_freq1.apply_filtered_image(self.filtered_image1, freq=filter_type)
+                if self.hybrid_processor is None:
+                 self.hybrid_processor=HybridImage(self.filtered_image1, None)
+
+                else:
+                 self.hybrid_processor.img1 = self.filtered_image1
+
+            self.display_mask_in_widget(self.region1Widget, mask_image1)
+
+        elif img_num == 2:
+            img_data =  self.image_viewer_freq2.get_loaded_image()
+            filter_type = self.get_selected_filter(self.filter_select2)
+
+            if img_data is not None:
+                filter_obj = FrequencyFilter(img_data)
+                self.filtered_image2, mask_image2 = filter_obj.apply_filter(filter_type, cutoff)
+                self.image_viewer_freq2.apply_filtered_image(self.filtered_image2, freq=filter_type)
+            self.display_mask_in_widget(self.region2Widget, mask_image2)
+
+            if self.hybrid_processor is None:
+                self.hybrid_processor = HybridImage(None, self.filtered_image2)
+            else:
+                self.hybrid_processor.img2 = self.filtered_image2  
+           
+
+
+    def apply_hybird(self):
+
+        
+        if self.hybrid_processor and self.hybrid_processor.img1 is not None and self.hybrid_processor.img2 is not None:
+             self.display_hybrid_image()
+
+    def get_selected_filter(self, combo_box):
+        """Get selected filter type ('low' or 'high') from the combo box."""
+        selected_text = combo_box.currentText().lower()
+        print (selected_text)
+        return 'low pass' if "low pass" in selected_text else 'high pass'
+
+    def display_mask_in_widget(self, widget, image):
+     """Display a NumPy mask inside the given QWidget."""
+     height, width = image.shape
+     bytes_per_line = width
+     q_image = QImage(image.data, width, height, bytes_per_line, QImage.Format_Grayscale8)
+     pixmap = QPixmap.fromImage(q_image)
+
+    # Check if the widget already has a QLabel
+     if not hasattr(widget, "label"):
+        widget.label = QLabel(widget)  # Create QLabel inside the QWidget
+        widget.label.setGeometry(0, 0, widget.width(), widget.height())  # Resize QLabel to fit
+
+     widget.label.setPixmap(pixmap.scaled(widget.width(), widget.height()))
+     widget.label.show()
+
+
+    def update_filter_cutoff(self, img_num):
+     """Update the cutoff frequency when the slider is moved and reapply filtering."""
+    
+     if img_num == 1:
+       
+
+        new_cutoff = self.radiusSlider1.value()
+        self.sliderLabel1.setText(f"Cutoff: {new_cutoff} Hz")
+
+        # Reapply filter with updated cutoff
+        self.apply_frequency_filter(img_num, new_cutoff)
+
+     elif img_num == 2:
+       
+        new_cutoff = self.radiusSlider2.value()
+        self.sliderLabel2.setText(f"Cutoff: {new_cutoff} Hz")
+
+        # Reapply filter with updated cutoff
+        self.apply_frequency_filter(img_num, new_cutoff)
+
+    def set_initial_cutoff(self, img_num):
+        """Set initial cutoff value when selecting a filter from the combo box."""
+        if img_num == 1 and self.radiusSlider1 and self.sliderLabel1:
+            self.radiusSlider1.setValue(self.initial_cutoff)
+            self.sliderLabel1.setText(f"Cutoff: {self.initial_cutoff} Hz")
+            self.apply_frequency_filter(1, self.initial_cutoff)
+
+        elif img_num == 2 and self.radiusSlider2 and self.sliderLabel2:
+            self.radiusSlider2.setValue(self.initial_cutoff)
+            self.sliderLabel2.setText(f"Cutoff: {self.initial_cutoff} Hz")
+            self.apply_frequency_filter(2, self.initial_cutoff)
+
+
+    def display_hybrid_image(self):
+     """Generate and display the hybrid image."""
+     hybrid_result = self.hybrid_processor.create_hybrid("low-high")
+
+     if hybrid_result is not None:
+        self.image_viewer_freq1.display_output_image(hybrid_result, self.filterimage_Out)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
