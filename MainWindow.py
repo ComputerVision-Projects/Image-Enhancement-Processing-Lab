@@ -16,17 +16,18 @@ class MainWindow(QMainWindow):
         loadUi("MainWindow.ui", self)
         
         #Fatma
-        self.hist_widget= self.findChild(QWidget,'histogramWidget')
+        self.hist_widget= self.findChild(QWidget,'histogramWidget_5')
         self.dist_widget= self.findChild(QWidget,'distributionWidget')
         self.hist_operations= HistogramOperations(self.hist_widget,self.dist_widget)
-        self.equalize= self.findChild(QPushButton, 'equalize')
-        self.equalize.clicked.connect(self.equalize())
-        self.normalize= self.findChild(QPushButton, 'normalize')
-        self.normalize.clicked.connect(self.normalize())
+        self.equalize_button= self.findChild(QPushButton, 'equalize')
+        self.equalize_button.clicked.connect(self.equalize_func)
+        self.normalize_button= self.findChild(QPushButton, 'normalize')
+        self.normalize_button.clicked.connect(self.normalize_func)
         self.thresholdCombo = self.findChild(QComboBox, 'thresholdCombo')
-        self.thresholdCombo.currentIndexChanged.connect(self.threshold)
+        self.thresholdCombo.highlighted.connect(self.threshold)
         self.threshold_offset= self.findChild(QSlider, 'thresholdOffset')
         self.block_size= self.findChild(QSpinBox, 'blockSize')
+        self.block_size.setValue(11)
         self.threshold_offset.valueChanged.connect(lambda: self.threshold(1))
         self.block_size.valueChanged.connect(lambda: self.threshold(1))
         self.threshold_label = self.findChild(QLabel, "thresoldLabel")
@@ -76,31 +77,31 @@ class MainWindow(QMainWindow):
         self.filter_slider2.setMaximum(10) 
         self.filter_slider2.setSingleStep(1)  
 
-    def normalize(self):
+    def normalize_func(self):
         normalized_img= self.hist_operations.normalize()
         self.viewer_instance.display_output_image(normalized_img)
 
-    def equalize(self):
+    def equalize_func(self):
         equalized_img= self.hist_operations.equalize_histogram()
         self.viewer_instance.display_output_image(equalized_img)
     
     def threshold(self, index):
         if index==0:
-            self.threshold_label.setVisible(True)
-            self.block_size.setVisible(True)
-            self.threshold_offset.setVisible(True)
-            self.spin_label.setVisible(True)
-            self.threshold_label.setVisible(True)
-
-            self.threshold_label.setText(str(self.threshold_offset.value()))
-            threshold_img= self.hist_operations.global_threshold()
-            self.viewer_instance.display_output_image(threshold_img)
-        else:
             self.threshold_label.setVisible(False)
             self.block_size.setVisible(False)
             self.threshold_offset.setVisible(False)
             self.spin_label.setVisible(False)
             self.threshold_label.setVisible(False)
+
+            threshold_img= self.hist_operations.global_threshold()
+            self.viewer_instance.display_output_image(threshold_img)
+        else:
+            self.threshold_label.setVisible(True)
+            self.block_size.setVisible(True)
+            self.threshold_offset.setVisible(True)
+            self.spin_label.setVisible(True)
+            self.threshold_label.setVisible(True)
+            self.threshold_label.setText(str(self.threshold_offset.value()))
 
             threshold_img= self.hist_operations.local_threshold(self.block_size.value(), self.threshold_offset.value())
             self.viewer_instance.display_output_image(threshold_img)
