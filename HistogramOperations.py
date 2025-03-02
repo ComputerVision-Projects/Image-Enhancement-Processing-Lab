@@ -14,8 +14,14 @@ class HistogramOperations:
         self.widget2= widget2 #distribution curve widget
         
     def get_histogram(self, img,):
-        histogram, bins = np.histogram(img.flatten(), bins= 256)
-        return bins, histogram
+       # Compute histogram (256 values) and bin edges (257 values)
+        histogram, bins = np.histogram(img, bins=256, range=(0, 256))
+        # Ensure both have 256 elements
+        if bins.shape[0] != histogram.shape[0]:  
+            bins = bins[:-1]  # Remove the last bin edge to match histogram size
+        # Final shape check
+        assert histogram.shape == bins.shape, f"Shape mismatch: {histogram.shape} vs {bins.shape}"
+        return histogram, bins
     
     def get_distribution_curve(self, bins, histogram):
         #one method is interpolation
@@ -34,7 +40,8 @@ class HistogramOperations:
 
         #other method is CDF
         cdf = histogram.cumsum() / histogram.sum()
-        return bins[:-1], cdf
+        assert cdf.shape == bins.shape, f"Shape mismatch: {cdf.shape} vs {bins.shape}"
+        return bins, cdf
 
     def show_plots(self, img_data=None):
         if img_data is None:
@@ -49,7 +56,7 @@ class HistogramOperations:
             print("Error: parent_widget is None. Cannot plot histogram.")
             return
         figure= plt.Figure(figsize= (5,5))
-        ax=figure.add_subplot(111)
+        ax=figure.add_subplot(111) 
         if parent_widget.layout() is not None:
             # Remove old widgets in the layout
             while parent_widget.layout().count():
@@ -58,10 +65,10 @@ class HistogramOperations:
                     item.widget().deleteLater()  # Delete the old canvas
 
         if key_show=='histogram':
-            ax.bar(bins[:-1], histogram, label='Histogram')
+            ax.bar(bins, histogram, label='Histogram')
         else:
             #bins and histogram here means bins and pdf values
-            ax.plot(bins, histogram, color='red', linewidth=2, label="Interpolated Distribution")
+            ax.plot(bins,  histogram, color='red', linewidth=2, label="Interpolated Distribution")
 
         ax.set_xlabel("Pixel Intensity")
         ax.set_ylabel("Frequency")

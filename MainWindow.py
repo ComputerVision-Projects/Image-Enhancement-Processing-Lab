@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow,QComboBox, QSpinBox, QWidget, QApplication, QPushButton, QLabel, QSlider,QProgressBar,QGraphicsView,QGraphicsScene
+from PyQt5.QtWidgets import QMainWindow,QComboBox,QTabWidget, QSpinBox, QWidget, QApplication, QPushButton, QLabel, QSlider,QProgressBar,QGraphicsView,QGraphicsScene
 from PyQt5.QtGui import QIcon
 import os
 import sys
@@ -9,6 +9,7 @@ from ImageViewer import ImageViewer
 from NoiseAdder import NoiseAdder
 from NoiseFilter import NoiseFilter
 from EdgeDetectors import EdgeDetectors 
+from ColoredImg import ColoredImg
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -39,13 +40,24 @@ class MainWindow(QMainWindow):
         self.block_size.setVisible(False)
         self.threshold_offset.setVisible(False)
         self.spin_label.setVisible(False)
-        self.thresholdlabel.setVisible(False)        
+        self.thresholdlabel.setVisible(False) 
+        #transformation tab
+        self.histogramRGB= self.findChild(QWidget,'histogramRGB')
+        self.distributionRGB= self.findChild(QWidget,'distributionRGB')
+        self.inputRGB= self.findChild(QGraphicsView,'inputRGB')
+        self.outputGrey = self.findChild(QGraphicsView,'outputGrey')
+        self.transformation_tab= ColoredImg( self.histogramRGB, self.distributionRGB)
+
+        self.tabWidget= self.findChild(QTabWidget, "tabWidget")
+        self.tabWidget.currentChanged.connect(self.on_tab_changed)
 
 
         #joudy
         self.input_view = self.findChild(QGraphicsView, "inputGraphicsView")
         self.output_view = self.findChild(QGraphicsView, "outputGraphicsView")
-        self.viewer_instance =ImageViewer(self.hist_operations, self.input_view, self.output_view) 
+        self.viewer_instance_tab1 = ImageViewer(self.hist_operations, None, self.input_view, self.output_view)
+        self.viewer_instance_tab2 = ImageViewer(None, self.transformation_tab, self.inputRGB, self.outputGrey, index=1)
+        self.viewer_instance =self.viewer_instance_tab1
         self.edge_detector= EdgeDetectors(self.viewer_instance.get_loaded_image)
         self.edges_combobox=self.findChild(QComboBox,"edgesCombo")
         self.edges_combobox.currentIndexChanged.connect(
@@ -87,8 +99,13 @@ class MainWindow(QMainWindow):
         self.filter_slider1.setSingleStep(2) 
         self.filter_slider2.setMinimum(1) 
         self.filter_slider2.setMaximum(10) 
-        self.filter_slider2.setSingleStep(1)  
+        self.filter_slider2.setSingleStep(1) 
 
+    def on_tab_changed(self, index):
+        if index == 0:
+            self.viewer_instance = self.viewer_instance_tab1  # Use existing instance
+        elif index == 1:
+            self.viewer_instance = self.viewer_instance_tab2  # Use existing instance
 
     def apply_edge_detector(self,img,index):
         self.viewer_instance.display_output_image(self.edge_detector.apply_filter(img,index))
