@@ -55,12 +55,14 @@ class MainWindow(QMainWindow):
         self.noise_param2 = self.findChild(QLabel, "label2")
         self.noise_param2.setVisible(False)
 
+        self.apply_button = self.findChild(QPushButton, "applyButton")
+        self.apply_button.clicked.connect(self.apply)
         self.filter = self.findChild(QComboBox, "filtersCombo")
-        self.filter.currentIndexChanged.connect(self.apply_filter)
+        self.filter.currentIndexChanged.connect(self.apply)
         self.filter_slider1 = self.findChild(QSlider, "filterSlider1")
-        self.filter_slider1.valueChanged.connect(self.apply_filter)
+        self.filter_slider1.valueChanged.connect(self.update_filter_label)
         self.filter_slider2 = self.findChild(QSlider, "filterSlider2")
-        self.filter_slider2.valueChanged.connect(self.apply_filter)
+        self.filter_slider2.valueChanged.connect(self.update_filter_label)
         self.filter_slider2.setVisible(False)
         self.filter_param2 = self.findChild(QLabel, "filterLabel3")
         self.filter_param2.setVisible(False)
@@ -155,7 +157,19 @@ class MainWindow(QMainWindow):
         # Display the noisy image in the output view
         self.viewer_instance.display_image(noisy_image, self.output_view)
 
-    def apply_filter(self, index):
+    def update_filter_label(self):
+        param1 = self.filter_slider1.value()
+        if param1 % 2 == 0:
+            param1 += 1
+            self.filter_slider1.setValue(param1)  # Set to odd value
+
+        param2 = self.filter_slider2.value()
+        if self.filter_slider2.isVisible():
+            self.filter_label2.setText(str(param2))
+
+        self.filter_label1.setText(str(param1))
+
+    def apply(self, index):
         if not hasattr(self, "noisy_image") or self.noisy_image is None:
             print("No noisy image to filter.")
             return
@@ -170,7 +184,6 @@ class MainWindow(QMainWindow):
             self.filter_label2.setVisible(False)
             self.filter_slider2.setVisible(False)
             self.filter_param2.setVisible(False)   
-            self.filter_label1.setText(str(param1)) 
 
             filtered_image = noise_filter.average_filter(param1)
 
@@ -178,17 +191,13 @@ class MainWindow(QMainWindow):
             self.filter_label2.setVisible(True)
             self.filter_slider2.setVisible(True)
             self.filter_param2.setVisible(True)     
-            self.filter_label1.setText(str(param1))  
-            self.filter_label2.setText(str(param2))
          
             filtered_image = noise_filter.gaussian_filter(param1, param2)
 
         elif filter_type == "Median":
             self.filter_label2.setVisible(False)
             self.filter_slider2.setVisible(False)
-            self.filter_param2.setVisible(False)
-            self.filter_label1.setText(str(param1))  
-            self.filter_label2.setText(str(param2))     
+            self.filter_param2.setVisible(False)   
 
             filtered_image = noise_filter.median_filter(param1)
 
@@ -203,4 +212,4 @@ if __name__ == '__main__':
     window = MainWindow()
     window.show()
     # window.showMaximized()
-    sys.exit(app.exec_())     
+    sys.exit(app.exec_())

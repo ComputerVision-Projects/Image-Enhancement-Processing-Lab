@@ -5,11 +5,7 @@ class NoiseFilter:
     def __init__(self, noisy_image):
         self.image = noisy_image 
 
-    def enforce_odd_kernel_size(self, kernel_size):
-        return kernel_size if kernel_size % 2 == 1 else kernel_size + 1
-
     def average_filter(self, kernel_size=3):
-        kernel_size = self.enforce_odd_kernel_size(kernel_size)  # Ensure kernel is odd
         height, width = self.image.shape
         pad = kernel_size // 2
         padded_image = np.pad(self.image, pad, mode='edge')
@@ -24,7 +20,6 @@ class NoiseFilter:
         return filtered_image
     
     def gaussian_filter(self, kernel_size=3, sigma=1.0):
-        kernel_size = self.enforce_odd_kernel_size(kernel_size)  
         height, width = self.image.shape
         pad = kernel_size // 2
         x, y = np.mgrid[-pad:pad+1, -pad:pad+1]
@@ -43,7 +38,6 @@ class NoiseFilter:
         return filtered_image
              
     def median_filter(self, kernel_size=3):
-        kernel_size = self.enforce_odd_kernel_size(kernel_size)
         height, width = self.image.shape
         pad = kernel_size // 2
         padded_image = np.pad(self.image, pad, mode='edge')
