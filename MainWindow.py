@@ -11,7 +11,6 @@ from NoiseFilter import NoiseFilter
 from EdgeDetectors import EdgeDetectors 
 from HybridImage import HybridImage
 from PyQt5.QtGui import QImage, QPixmap
-from FrequencyFilter import FrequencyFilterfrom 
 from ColoredImg import ColoredImg
 
 class MainWindow(QMainWindow):
@@ -103,9 +102,6 @@ class MainWindow(QMainWindow):
         self.filter_slider2.setMinimum(1) 
         self.filter_slider2.setMaximum(10) 
         self.filter_slider2.setSingleStep(1) 
-
-
-
 
 
 
