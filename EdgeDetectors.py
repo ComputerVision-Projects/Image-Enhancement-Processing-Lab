@@ -164,6 +164,7 @@ class EdgeDetectors:
 
     def canny_detector(self,image):
 
+
         image_median=np.median(image)
         low_thershold=min(0,0.5*image_median)
         high_thershold=max(255,1.5*image_median)

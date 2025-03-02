@@ -69,7 +69,7 @@ class ImageViewer:
     def display_image(self, img, target):
         """ Display a 2D NumPy array (grayscale image) in either a QGraphicsView or QGraphicsScene. """
         if img is None or not isinstance(img, np.ndarray):
-            print("Invalid image data.")
+            print("Invalid image data.") 
             return 
 
         height, width = img.shape
