@@ -38,14 +38,16 @@ class ImageViewer:
     def browse_image(self, image_path):
         self._image_path = image_path  
         if self.check_extension():
-            self.img_data = cv2.imread(self._image_path, cv2.IMREAD_GRAYSCALE)
+            if self.index ==0:
+                self.img_data = cv2.imread(self._image_path, cv2.IMREAD_GRAYSCALE)
+            else:
+                self.img_data = cv2.imread(self._image_path, cv2.IMREAD_COLOR)  
+                # self.img_data = cv2.cvtColor(self.img_data, cv2.COLOR_BGR2RGB)
+
             if self.img_data is None:
                 print("Error loading image.")
                 return
             
-            if len(self.img_data.shape) == 3:
-                print("Converting image to grayscale")
-                self.img_data = cv2.cvtColor(self.img_data, cv2.COLOR_BGR2GRAY)
 
             self._processed_image = self.img_data  
             if self.histogram_cls:
@@ -108,7 +110,7 @@ class ImageViewer:
             print("Invalid image data.")
             return 
        
-        height, width = img.shape
+        height, width,channels = img.shape
         bytes_per_line = 3 * width  
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         self.transformation_cls.set_colored_img(img)
@@ -131,6 +133,7 @@ class ImageViewer:
             target.addItem(QGraphicsPixmapItem(pixmap))
         else:
             print("Invalid target for image display.")
+
          
 
     def check_extension(self):
