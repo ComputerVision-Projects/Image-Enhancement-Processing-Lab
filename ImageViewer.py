@@ -90,8 +90,37 @@ class ImageViewer:
         else:
             print("Invalid target for image display.")
 
+
+    def display_RGB_image(self, img, target):
+        if img is None or not isinstance(img, np.ndarray):
+            print("Invalid image data.")
+            return 
+
+        if len(img.shape) == 3 and img.shape[2] == 3:  
+            height, width, channels = img.shape
+            bytes_per_line = 3 * width  
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) 
+            q_image = QImage(img.data, width, height, bytes_per_line, QImage.Format_RGB888)
+        
+        else:
+            print("Upload RGB Image")
+            return
+
+        pixmap = QPixmap.fromImage(q_image)
+
+        if isinstance(target, QGraphicsView):
+            scene = target.scene() or QGraphicsScene()
+            target.setScene(scene)
+            scene.clear()
+            scene.addItem(QGraphicsPixmapItem(pixmap))
+        elif isinstance(target, QGraphicsScene):
+            target.clear()
+            target.addItem(QGraphicsPixmapItem(pixmap))
+        else:
+            print("Invalid target for image display.")
+         
+
     def check_extension(self):
-        """Check if the file has a valid image extension."""
         valid_extensions = ['.png', '.jpg', '.jpeg', '.bmp', '.tif', '.tiff']
         if not any(self._image_path.lower().endswith(ext) for ext in valid_extensions):
             print("Invalid image file extension.")

@@ -3,26 +3,48 @@ import numpy as np
 import cv2 as cv
 class EdgeDetectors:
 
-    def __init__(self,image,detector_type):
+    def __init__(self,image):
 
         self.image=image 
-        self.detector_type=detector_type
-
-    def image_padding(self,image):
         
-        self.image=image
 
-        image_height,image_width,image_channels=image.shape 
-        top_pad,bottom_pad,right_pad,left_pad=1
+
+    def apply_filter(self,img,detector_type):
+        pad_image=self.image_padding(img) 
+        if detector_type==0:
+           return self.sobel_detector(pad_image)
+        
+        elif detector_type==1:
+            return self.roberts_detector(pad_image)
+        
+        elif detector_type==2:
+            return self.perwitt_detector(pad_image)
+        
+        else:
+            return self.canny_detector(img)
+            
+      
+
+    def image_padding(self,img):
+        
+        self.image=img
+
+        image_height,image_width=img.shape 
+        top_pad=1
+        bottom_pad=1
+        right_pad=1
+        left_pad=1
 
         pad_color=0
 
         new_image_height=image_height+top_pad+bottom_pad
         new_image_width=image_width+right_pad+left_pad
 
-        self.padded_image=np.full((new_image_width,new_image_height,image_channels),pad_color,dtype=np.uint8)
+        self.padded_image = np.zeros((new_image_height, new_image_width), dtype=img.dtype)  # No extra dimension
 
-        self.padded_image[top_pad:top_pad+image_height,left_pad:left_pad+image_width]=image
+
+        self.padded_image[top_pad:top_pad+image_height,left_pad:left_pad+image_width]=img
+        return self.padded_image
 
 
     def sobel_detector(self,padded_image):
@@ -38,7 +60,7 @@ class EdgeDetectors:
              [1,2,1]]
              )
         
-        height,width,channels=self.image.shape
+        height,width=self.image.shape
 
         output_image_x_dir = np.zeros((height, width), dtype=np.uint8)
         output_image_y_dir = np.zeros((height, width), dtype=np.uint8)
@@ -52,7 +74,8 @@ class EdgeDetectors:
                 result_x_dir=np.sum(roi*x_dir_kernal)
                 result_y_dir=np.sum(roi*y_dir_kernal)
 
-                gradient_magintude=np.sqrt(result_x_dir**2,result_y_dir**2)
+                gradient_magintude = np.sqrt(result_x_dir**2 + result_y_dir**2)  
+
 
 
 
@@ -82,7 +105,7 @@ class EdgeDetectors:
                              )
         
 
-        height,width,channels=self.image.shape
+        height,width=self.image.shape
         output_image_x_dir = np.zeros((height, width), dtype=np.uint8)
         output_image_y_dir = np.zeros((height, width), dtype=np.uint8)
         output_image_edges = np.zeros((height, width), dtype=np.uint8)
@@ -94,7 +117,8 @@ class EdgeDetectors:
                 result_x_dir=np.sum(roi*x_dir_kernal)
                 result_y_dir=np.sum(roi*y_dir_kernal)
 
-                gradient_magintude=np.sqrt(result_x_dir**2,result_y_dir**2)
+                gradient_magintude = np.sqrt(result_x_dir**2 + result_y_dir**2) 
+
 
 
 
@@ -115,7 +139,7 @@ class EdgeDetectors:
              [0,0,0],
              [1,1,1]]
              )
-        height,width,channels=self.image.shape
+        height,width=self.image.shape
         output_image_x_dir = np.zeros((height, width), dtype=np.uint8)
         output_image_y_dir = np.zeros((height, width), dtype=np.uint8)
         output_image_edges = np.zeros((height, width), dtype=np.uint8)
@@ -127,7 +151,8 @@ class EdgeDetectors:
                 result_x_dir=np.sum(roi*x_dir_kernal)
                 result_y_dir=np.sum(roi*y_dir_kernal)
 
-                gradient_magintude=np.sqrt(result_x_dir**2,result_y_dir**2)
+                gradient_magintude = np.sqrt(result_x_dir**2 + result_y_dir**2) 
+
 
 
 
@@ -137,7 +162,7 @@ class EdgeDetectors:
 
         return output_image_edges
 
-    def canny_detector(image):
+    def canny_detector(self,image):
 
         image_median=np.median(image)
         low_thershold=min(0,0.5*image_median)

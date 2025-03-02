@@ -8,6 +8,7 @@ from HistogramOperations import HistogramOperations
 from ImageViewer import ImageViewer
 from NoiseAdder import NoiseAdder
 from NoiseFilter import NoiseFilter
+from EdgeDetectors import EdgeDetectors 
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -45,6 +46,12 @@ class MainWindow(QMainWindow):
         self.input_view = self.findChild(QGraphicsView, "inputGraphicsView")
         self.output_view = self.findChild(QGraphicsView, "outputGraphicsView")
         self.viewer_instance =ImageViewer(self.hist_operations, self.input_view, self.output_view) 
+        self.edge_detector= EdgeDetectors(self.viewer_instance.get_loaded_image)
+        self.edges_combobox=self.findChild(QComboBox,"edgesCombo")
+        self.edges_combobox.currentIndexChanged.connect(
+            lambda index: self.apply_edge_detector(self.viewer_instance.get_loaded_image(), index)
+        )
+
 
         #Laila
         self.noise = self.findChild(QComboBox, "noisesCombo_2")
@@ -81,6 +88,11 @@ class MainWindow(QMainWindow):
         self.filter_slider2.setMinimum(1) 
         self.filter_slider2.setMaximum(10) 
         self.filter_slider2.setSingleStep(1)  
+
+
+    def apply_edge_detector(self,img,index):
+        self.viewer_instance.display_output_image(self.edge_detector.apply_filter(img,index))
+
 
     def normalize_func(self):
         normalized_img= self.hist_operations.normalize()
