@@ -54,7 +54,7 @@ class ImageViewer:
                 self.display_image(self.img_data, self._input_view)
         
 
-    def display_output_image(self, processed_img=None):
+    def display_output_image(self, processed_img=None,output=None):
         """ Displays the processed image in the output view when explicitly called. """
         if processed_img is None:
             processed_img = self._processed_image  
@@ -63,9 +63,16 @@ class ImageViewer:
             print("No processed image to display.")
             return
 
-        if self._output_view:
+
+
+        if output:
+            self.display_image(processed_img,output)
+
+        elif self._output_view:
             self.display_image(processed_img, self._output_view)
 
+
+       
     def display_image(self, img, target):
         """ Display a 2D NumPy array (grayscale image) in either a QGraphicsView or QGraphicsScene. """
         if img is None or not isinstance(img, np.ndarray):
@@ -131,3 +138,19 @@ class ImageViewer:
     
     def get_loaded_image(self):
         return self.img_data
+ 
+
+
+    def apply_filtered_image(self, filtered_img, freq=None):
+        """ Update the input view if a frequency string is provided, otherwise use the output view. """
+        if filtered_img is not None:
+            if freq:  
+                # If a frequency string is provided, replace the input image
+                print(f"Applying frequency filter: {freq}, updating input view.")
+                self.display_image(filtered_img, self._input_view)
+            else:
+                # Otherwise, display in the output view
+                print("No frequency specified, displaying in output view.")
+                self.display_image(filtered_img, self._output_view)
+
+   
