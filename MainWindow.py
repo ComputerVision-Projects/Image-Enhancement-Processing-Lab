@@ -33,7 +33,12 @@ class MainWindow(QMainWindow):
         self.threshold_label = self.findChild(QLabel, "thresoldLabel")
 
         self.spin_label = self.findChild(QLabel,"label1_2")
-        self.threshold_label = self.findChild(QLabel,"label_5")
+        self.thresholdlabel = self.findChild(QLabel,"label_5")
+        self.threshold_label.setVisible(False)
+        self.block_size.setVisible(False)
+        self.threshold_offset.setVisible(False)
+        self.spin_label.setVisible(False)
+        self.thresholdlabel.setVisible(False)        
 
 
         #joudy
@@ -91,7 +96,7 @@ class MainWindow(QMainWindow):
             self.block_size.setVisible(False)
             self.threshold_offset.setVisible(False)
             self.spin_label.setVisible(False)
-            self.threshold_label.setVisible(False)
+            self.thresholdlabel.setVisible(False)
 
             threshold_img= self.hist_operations.global_threshold()
             self.viewer_instance.display_output_image(threshold_img)
@@ -100,7 +105,7 @@ class MainWindow(QMainWindow):
             self.block_size.setVisible(True)
             self.threshold_offset.setVisible(True)
             self.spin_label.setVisible(True)
-            self.threshold_label.setVisible(True)
+            self.thresholdlabel.setVisible(True)
             self.threshold_label.setText(str(self.threshold_offset.value()))
 
             threshold_img= self.hist_operations.local_threshold(self.block_size.value(), self.threshold_offset.value())
