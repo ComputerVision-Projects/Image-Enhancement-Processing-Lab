@@ -129,17 +129,20 @@ class MainWindow(QMainWindow):
         self.sliderLabel1.setText(f"Cutoff: {0 }")
         self.sliderLabel2.setText(f"Cutoff: {0 }")
 
+       
 
+        self.radiusSlider1.setSingleStep(10)  
+        self.radiusSlider2.setSingleStep(10)  
 
         # Connect sliders to update function
-        self.radiusSlider1.valueChanged.connect(lambda: self.update_filter_cutoff(1))
-        self.radiusSlider2.valueChanged.connect(lambda: self.update_filter_cutoff(2))
+        self.radiusSlider1.valueChanged.connect(lambda: self.update_filter(1))
+        self.radiusSlider2.valueChanged.connect(lambda: self.update_filter(2))
 
         if self.filter_select1:
-            self.filter_select1.currentIndexChanged.connect(lambda: self.set_initial_cutoff(1))
+            self.filter_select1.currentIndexChanged.connect(lambda:self.update_filter(1))
 
         if self.filter_select2:
-            self.filter_select2.currentIndexChanged.connect(lambda: self.set_initial_cutoff(2))
+            self.filter_select2.currentIndexChanged.connect(lambda:self.update_filter(2))
 
 
         self.region1Widget = self.findChild(QWidget, "region1Widget")
@@ -329,25 +332,24 @@ class MainWindow(QMainWindow):
                 filter_obj = FrequencyFilter(img_data)
                 self.filtered_image2, mask_image2 = filter_obj.apply_filter(filter_type, cutoff)
                 self.image_viewer_freq2.apply_filtered_image(self.filtered_image2, freq=filter_type)
-            self.display_mask_in_widget(self.region2Widget, mask_image2)
 
             if self.hybrid_processor is None:
                 self.hybrid_processor = HybridImage(None, self.filtered_image2)
             else:
                 self.hybrid_processor.img2 = self.filtered_image2  
            
+            self.display_mask_in_widget(self.region2Widget, mask_image2)
 
 
     def apply_hybird(self):
 
-        
         if self.hybrid_processor and self.hybrid_processor.img1 is not None and self.hybrid_processor.img2 is not None:
              self.display_hybrid_image()
 
     def get_selected_filter(self, combo_box):
         """Get selected filter type ('low' or 'high') from the combo box."""
         selected_text = combo_box.currentText().lower()
-        print (selected_text)
+       # print (selected_text)
         return 'low pass' if "low pass" in selected_text else 'high pass'
 
     def display_mask_in_widget(self, widget, image):
@@ -370,13 +372,13 @@ class MainWindow(QMainWindow):
      widget.label.show()
 
 
-    def update_filter_cutoff(self, img_num):
+    def update_filter(self, img_num):
      """Update the cutoff frequency when the slider is moved and reapply filtering."""
     
      if img_num == 1:
        
 
-        new_cutoff = self.radiusSlider1.value()
+        new_cutoff = round(self.radiusSlider1.value() / 10) * 10 
         self.sliderLabel1.setText(f"Cutoff: {new_cutoff} Hz")
 
         # Reapply filter with updated cutoff
@@ -384,23 +386,13 @@ class MainWindow(QMainWindow):
 
      elif img_num == 2:
        
-        new_cutoff = self.radiusSlider2.value()
+        new_cutoff = round(self.radiusSlider2.value() / 10) * 10
         self.sliderLabel2.setText(f"Cutoff: {new_cutoff} Hz")
 
         # Reapply filter with updated cutoff
         self.apply_frequency_filter(img_num, new_cutoff)
 
-    def set_initial_cutoff(self, img_num):
-        """Set initial cutoff value when selecting a filter from the combo box."""
-        if img_num == 1 and self.radiusSlider1 and self.sliderLabel1:
-            self.radiusSlider1.setValue(self.initial_cutoff)
-            self.sliderLabel1.setText(f"Cutoff: {self.initial_cutoff} Hz")
-            self.apply_frequency_filter(1, self.initial_cutoff)
-
-        elif img_num == 2 and self.radiusSlider2 and self.sliderLabel2:
-            self.radiusSlider2.setValue(self.initial_cutoff)
-            self.sliderLabel2.setText(f"Cutoff: {self.initial_cutoff} Hz")
-            self.apply_frequency_filter(2, self.initial_cutoff)
+   
 
 
     def display_hybrid_image(self):
@@ -417,18 +409,30 @@ class MainWindow(QMainWindow):
     def reset_ui_for_new_image(self, img_num):
         """ Reset slider and mask when a new image is loaded. """
         if img_num == 1:
+            self.radiusSlider1.blockSignals(True)
+            self.filter_select1.blockSignals(True)
             self.radiusSlider1.setValue(30)
             cutoff1 = self.radiusSlider1.value()   # Reset slider to 0
             self.sliderLabel1.setText(f"Cutoff: {cutoff1} Hz")
             self.filter_select1.setCurrentIndex(1)  
+            self.radiusSlider1.blockSignals(False)
+            self.filter_select1.blockSignals(False)
 
             self.apply_frequency_filter(1,cutoff1)
         elif img_num == 2:
+            self.radiusSlider2.blockSignals(True)
+            self.filter_select2.blockSignals(True)
+
             self.radiusSlider2.setValue(30)
             cutoff2 = self.radiusSlider2.value() 
             self.sliderLabel2.setText(f"Cutoff: {cutoff2} Hz")
-            self.filter_select2.setCurrentIndex(2)  
+            self.filter_select2.setCurrentIndex(2) 
+            self.radiusSlider2.blockSignals(False)
+            self.filter_select2.blockSignals(False)
+
+
             self.apply_frequency_filter(2,cutoff2)
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = MainWindow()

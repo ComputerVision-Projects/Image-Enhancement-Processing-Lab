@@ -164,11 +164,12 @@ class ImageViewer:
         if filtered_img is not None:
             if freq:  
                 # If a frequency string is provided, replace the input image
-                print(f"Applying frequency filter: {freq}, updating input view.")
+                #print(f"Applying frequency filter: {freq}, updating input view.")
                 self.display_image(filtered_img, self._input_view)
             else:
                 # Otherwise, display in the output view
-                print("No frequency specified, displaying in output view.")
+                
+                #print("No frequency specified, displaying in output view.")
                 self.display_image(filtered_img, self._output_view)
 
    
