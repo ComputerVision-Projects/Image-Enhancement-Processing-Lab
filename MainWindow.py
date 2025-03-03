@@ -12,7 +12,8 @@ from EdgeDetectors import EdgeDetectors
 from HybridImage import HybridImage
 from PyQt5.QtGui import QImage, QPixmap
 from ColoredImg import ColoredImg
-
+from FrequencyFilter import FrequencyFilter
+from SignalManager import signal_manager
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -144,8 +145,10 @@ class MainWindow(QMainWindow):
         self.region1Widget = self.findChild(QWidget, "region1Widget")
         self.region2Widget = self.findChild(QWidget, "region2Widget")
 
-        self.image_viewer_freq1 = ImageViewer(self.hist_operations, self.filterimage1, self.filterimage_Out)
-        self.image_viewer_freq2 = ImageViewer(self.hist_operations, self.filterimage2, self.filterimage_Out)
+        self.image_viewer_freq1 = ImageViewer(self.hist_operations,None, self.filterimage1, self.filterimage_Out,index=2,img_num=1)
+        self.image_viewer_freq2 = ImageViewer(self.hist_operations,None, self.filterimage2, self.filterimage_Out,index=2,img_num=2)
+        signal_manager.new_image_loaded.connect(self.reset_ui_for_new_image)
+
         self.hybird_button.clicked.connect(self.apply_hybird)
 
        
@@ -154,6 +157,9 @@ class MainWindow(QMainWindow):
             self.viewer_instance = self.viewer_instance_tab1  # Use existing instance
         elif index == 1:
             self.viewer_instance = self.viewer_instance_tab2  # Use existing instance
+        elif index==2:
+            self.viewer_instance1= self.image_viewer_freq1
+            self.viewer_instance2= self.image_viewer_freq2
 
     def apply_edge_detector(self,img,index):
         self.viewer_instance.display_output_image(self.edge_detector.apply_filter(img,index))
@@ -295,7 +301,7 @@ class MainWindow(QMainWindow):
 
 
 
-         #hajar
+    #hajar
     def apply_frequency_filter(self, img_num,cutoff):
         """Apply selected filter dynamically when an image is loaded or when the user changes the combo box."""
         cutoff=cutoff
@@ -346,6 +352,10 @@ class MainWindow(QMainWindow):
 
     def display_mask_in_widget(self, widget, image):
      """Display a NumPy mask inside the given QWidget."""
+     if image is None:
+            if hasattr(widget, "label"):
+                widget.label.clear()
+            return
      height, width = image.shape
      bytes_per_line = width
      q_image = QImage(image.data, width, height, bytes_per_line, QImage.Format_Grayscale8)
@@ -401,6 +411,24 @@ class MainWindow(QMainWindow):
         self.image_viewer_freq1.display_output_image(hybrid_result, self.filterimage_Out)
 
 
+
+
+
+    def reset_ui_for_new_image(self, img_num):
+        """ Reset slider and mask when a new image is loaded. """
+        if img_num == 1:
+            self.radiusSlider1.setValue(30)
+            cutoff1 = self.radiusSlider1.value()   # Reset slider to 0
+            self.sliderLabel1.setText(f"Cutoff: {cutoff1} Hz")
+            self.filter_select1.setCurrentIndex(1)  
+
+            self.apply_frequency_filter(1,cutoff1)
+        elif img_num == 2:
+            self.radiusSlider2.setValue(30)
+            cutoff2 = self.radiusSlider2.value() 
+            self.sliderLabel2.setText(f"Cutoff: {cutoff2} Hz")
+            self.filter_select2.setCurrentIndex(2)  
+            self.apply_frequency_filter(2,cutoff2)
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = MainWindow()

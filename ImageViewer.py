@@ -2,10 +2,13 @@ from PyQt5.QtWidgets import QFileDialog, QGraphicsPixmapItem, QGraphicsScene, QG
 from PyQt5.QtGui import QImage, QPixmap
 import cv2
 import numpy as np
-
+from SignalManager import signal_manager
 class ImageViewer:
-    def __init__(self, histogram_cls=None, transformation_cls=None,  input_view=None, output_view=None, index=0):
+    def __init__(self, histogram_cls=None, transformation_cls=None,  input_view=None, output_view=None, index=0 , img_num=None):
+        self.img_num = img_num
+
         self._input_view = input_view
+
         self._output_view = output_view
         self._image_path = None
         self.img_data=None 
@@ -48,6 +51,9 @@ class ImageViewer:
                 print("Error loading image.")
                 return
             
+            if len(self.img_data.shape) == 3:
+                print("Converting image to grayscale")
+                self.img_data = cv2.cvtColor(self.img_data, cv2.COLOR_BGR2GRAY)
 
             self._processed_image = self.img_data  
             if self.histogram_cls:
@@ -59,7 +65,10 @@ class ImageViewer:
                     self.display_image(self.img_data, self._input_view)
                 elif self.index==1:
                     self.display_RGB_image(self.img_data, self._input_view)
-        
+                elif self.index==2:
+                    self.display_image(self.img_data, self._input_view)
+                    signal_manager.new_image_loaded.emit(self.img_num)
+
 
     def display_output_image(self, processed_img=None,output=None):
         """ Displays the processed image in the output view when explicitly called. """
