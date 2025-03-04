@@ -54,8 +54,8 @@ class MainWindow(QMainWindow):
         self.distributionG= self.findChild(QWidget,'distributionG')
         self.histogramB= self.findChild(QWidget,'histogramB')
         self.distributionB= self.findChild(QWidget,'distributionB')
-        self.inputRGB= self.findChild(QGraphicsView,'inputRGB')
-        self.outputGrey = self.findChild(QGraphicsView,'outputGrey')
+        self.inputRGB= self.findChild(QWidget,'inputRGB')
+        self.outputGrey = self.findChild(QWidget,'outputGrey')
         self.transformation_tab= ColoredImg(self.histogramR, self.distributionR, self.histogramG, self.distributionG, self.histogramB, self.distributionB)
 
 

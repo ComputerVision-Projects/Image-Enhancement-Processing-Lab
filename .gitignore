@@ -1,4 +1,6 @@
 testfreq
 testhybrid
 __pycache__
+
 standard images
+*.pyc

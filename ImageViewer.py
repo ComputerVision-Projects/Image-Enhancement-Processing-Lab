@@ -89,16 +89,13 @@ class ImageViewer(QWidget):
             print("Invalid image data.")
             return
 
-        # Ensure the image is grayscale
-        if len(img.shape) == 3:  # If it's a color image, convert to grayscale
+        if len(img.shape) == 3:  
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         height, width = img.shape
         bytes_per_line = width
 
        
-        if not img.flags['C_CONTIGUOUS']:
-            img = np.ascontiguousarray(img)
 
        
         q_image = QImage(img.data, width, height, bytes_per_line, QImage.Format_Grayscale8)
@@ -127,6 +124,7 @@ class ImageViewer(QWidget):
 
 
     def display_RGB_image(self, img, target):
+        print("1")
         if img is None or not isinstance(img, np.ndarray):
             print("Invalid image data.")
             return
@@ -147,14 +145,12 @@ class ImageViewer(QWidget):
             print("Failed to create QImage.")
             return
 
-        # Convert QImage to QPixmap
+        
         pixmap = QPixmap.fromImage(q_image)
 
-        # Clear any existing QLabel in the widget
+        
         for child in target.findChildren(QLabel):
             child.deleteLater()
-
-        # Create a new QLabel and add it to the widget
         label = QLabel(target)
         label.setPixmap(pixmap.scaled(target.size(), Qt.IgnoreAspectRatio, Qt.SmoothTransformation))
         label.setScaledContents(True)
@@ -165,6 +161,7 @@ class ImageViewer(QWidget):
         label.raise_()
 
         print(f"RGB image displayed in widget with size: {target.size()}")      
+
     def check_extension(self):
         valid_extensions = ['.png', '.jpg', '.jpeg', '.bmp', '.tif', '.tiff']
         if not any(self._image_path.lower().endswith(ext) for ext in valid_extensions):
