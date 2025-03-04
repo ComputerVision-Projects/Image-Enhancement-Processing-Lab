@@ -65,10 +65,10 @@ class HistogramOperations:
                     item.widget().deleteLater()  # Delete the old canvas
 
         if key_show=='histogram':
-            ax.bar(bins, histogram, label='Histogram')
+            ax.bar(histogram, bins, label='Histogram')
         else:
             #bins and histogram here means bins and pdf values
-            ax.plot(bins,  histogram, color='red', linewidth=2, label="CDF")
+            ax.plot(histogram, bins, color='red', linewidth=2, label="CDF")
 
         ax.set_xlabel("Pixel Intensity")
         ax.set_ylabel("Frequency")
