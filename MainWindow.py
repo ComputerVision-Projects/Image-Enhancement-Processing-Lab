@@ -44,11 +44,15 @@ class MainWindow(QMainWindow):
         self.spin_label.setVisible(False)
         self.thresholdlabel.setVisible(False) 
         #transformation tab
-        self.histogramRGB= self.findChild(QWidget,'histogramRGB')
-        self.distributionRGB= self.findChild(QWidget,'distributionRGB')
+        self.histogramR= self.findChild(QWidget,'histogramR')
+        self.distributionR= self.findChild(QWidget,'distributionR')
+        self.histogramG= self.findChild(QWidget,'histogramG')
+        self.distributionG= self.findChild(QWidget,'distributionG')
+        self.histogramB= self.findChild(QWidget,'histogramB')
+        self.distributionB= self.findChild(QWidget,'distributionB')
         self.inputRGB= self.findChild(QGraphicsView,'inputRGB')
         self.outputGrey = self.findChild(QGraphicsView,'outputGrey')
-        self.transformation_tab= ColoredImg( self.histogramRGB, self.distributionRGB)
+        self.transformation_tab= ColoredImg(self.histogramR, self.distributionR, self.histogramG, self.distributionG, self.histogramB, self.distributionB)
 
         self.tabWidget= self.findChild(QTabWidget, "tabWidget")
         self.tabWidget.currentChanged.connect(self.on_tab_changed)

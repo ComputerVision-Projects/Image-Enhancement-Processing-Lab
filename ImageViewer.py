@@ -108,7 +108,7 @@ class ImageViewer:
             print("Invalid image data.")
             return 
        
-        height, width = img.shape
+        height, width, channels = img.shape
         bytes_per_line = 3 * width  
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         self.transformation_cls.set_colored_img(img)
