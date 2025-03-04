@@ -68,7 +68,7 @@ class HistogramOperations:
             ax.bar(bins, histogram, label='Histogram')
         else:
             #bins and histogram here means bins and pdf values
-            ax.plot(bins,  histogram, color='red', linewidth=2, label="Interpolated Distribution")
+            ax.plot(bins,  histogram, color='red', linewidth=2, label="CDF")
 
         ax.set_xlabel("Pixel Intensity")
         ax.set_ylabel("Frequency")
@@ -95,7 +95,7 @@ class HistogramOperations:
         cdf_equalized=((histogram_cdf-min_cdf) /(max_cdf - min_cdf))*255
         cdf_equalized= cdf_equalized.astype(np.uint8)
         #each pixel value is mapped to its new value after equalization
-        image_data_equalized= cdf_equalized[self.image_data] #numpy vectorization facilitate the mapping, it maps pixels all at once
+        image_data_equalized = cdf_equalized[self.image_data.astype(np.uint8)]  #numpy vectorization facilitate the mapping, it maps pixels all at once
 
         self.show_plots(image_data_equalized)
         return image_data_equalized
