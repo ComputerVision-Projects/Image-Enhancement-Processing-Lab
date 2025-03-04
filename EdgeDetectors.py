@@ -48,6 +48,7 @@ class EdgeDetectors:
 
 
     def sobel_detector(self,padded_image):
+        
         x_dir_kernal=np.array([
             [-1,0,1],
             [-2,0,2],

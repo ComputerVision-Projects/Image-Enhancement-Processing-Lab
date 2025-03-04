@@ -1,4 +1,5 @@
 from HistogramOperations import HistogramOperations
+import numpy as np
 class ColoredImg:
     def __init__(self,widget1, widget2, colored_img=None,):
         self.widget1= widget1
@@ -9,8 +10,10 @@ class ColoredImg:
       
     def convert_to_grayscale(self):
         #I=0.2989R+0.5870G+0.1140B 
-        gray_img=  self.R*0.2989 +  self.G*0.5870+  self.B*0.1140
-        print("convert to gray")
+        gray_img = (self.R.astype(np.float32) * 0.2989 +
+            self.G.astype(np.float32) * 0.5870 +
+            self.B.astype(np.float32) * 0.1140)
+        gray_img = np.clip(gray_img, 0, 255).astype(np.uint8)
         return gray_img
     
     def histogram_channels(self,):
@@ -34,5 +37,5 @@ class ColoredImg:
     
     def set_colored_img(self, colored_img):
         print("set image")
-        self.R, self.G, self.B = colored_img[:, :, 0], colored_img[:, :, 1], colored_img[:, :, 2]
+        self.B, self.G, self.R = colored_img[:, :, 0], colored_img[:, :, 1], colored_img[:, :, 2]
 

@@ -19,6 +19,9 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
         loadUi("MainWindow.ui", self)
+
+        self.input_view = self.findChild(QWidget, "inputImage")
+        self.output_view = self.findChild(QWidget, "outputImage")
         
         #Fatma
         self.hist_widget= self.findChild(QWidget,'histogramWidget_5')
@@ -47,8 +50,8 @@ class MainWindow(QMainWindow):
         #transformation tab
         self.histogramRGB= self.findChild(QWidget,'histogramRGB')
         self.distributionRGB= self.findChild(QWidget,'distributionRGB')
-        self.inputRGB= self.findChild(QGraphicsView,'inputRGB')
-        self.outputGrey = self.findChild(QGraphicsView,'outputGrey')
+        self.inputRGB= self.findChild(QWidget,'inputRGB')
+        self.outputGrey = self.findChild(QWidget,'outputGrey')
         self.transformation_tab= ColoredImg( self.histogramRGB, self.distributionRGB)
 
         self.tabWidget= self.findChild(QTabWidget, "tabWidget")
@@ -56,8 +59,7 @@ class MainWindow(QMainWindow):
 
 
         #joudy
-        self.input_view = self.findChild(QGraphicsView, "inputGraphicsView")
-        self.output_view = self.findChild(QGraphicsView, "outputGraphicsView")
+        
         self.viewer_instance_tab1 = ImageViewer(self.hist_operations, None, self.input_view, self.output_view)
         self.viewer_instance_tab2 = ImageViewer(None, self.transformation_tab, self.inputRGB, self.outputGrey, index=1)
         self.viewer_instance =self.viewer_instance_tab1
@@ -112,9 +114,9 @@ class MainWindow(QMainWindow):
         self.hybrid_processor = HybridImage() 
         self.filtered_image1 = None
         self.filtered_image2 = None
-        self.filterimage1 = self.findChild(QGraphicsView, "graphicsView1")
-        self.filterimage2 = self.findChild(QGraphicsView, "graphicsView2")
-        self.filterimage_Out = self.findChild(QGraphicsView, "graphicsView3")
+        self.filterimage1 = self.findChild(QWidget, "image1")
+        self.filterimage2 = self.findChild(QWidget, "image2")
+        self.filterimage_Out = self.findChild(QWidget, "output")
         self.filter_select1 = self.findChild(QComboBox, "frequencyCombo1")
         self.filter_select2 = self.findChild(QComboBox, "frequencyCombo2")
         
