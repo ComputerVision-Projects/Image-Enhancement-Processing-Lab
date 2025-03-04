@@ -12,12 +12,16 @@ from EdgeDetectors import EdgeDetectors
 from HybridImage import HybridImage
 from PyQt5.QtGui import QImage, QPixmap
 from ColoredImg import ColoredImg
-
+from FrequencyFilter import FrequencyFilter
+from SignalManager import signal_manager
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
         loadUi("MainWindow.ui", self)
+
+        self.input_view = self.findChild(QWidget, "inputImage")
+        self.output_view = self.findChild(QWidget, "outputImage")
         
         #Fatma
         self.hist_widget= self.findChild(QWidget,'histogramWidget_5')
@@ -54,13 +58,13 @@ class MainWindow(QMainWindow):
         self.outputGrey = self.findChild(QGraphicsView,'outputGrey')
         self.transformation_tab= ColoredImg(self.histogramR, self.distributionR, self.histogramG, self.distributionG, self.histogramB, self.distributionB)
 
+
         self.tabWidget= self.findChild(QTabWidget, "tabWidget")
         self.tabWidget.currentChanged.connect(self.on_tab_changed)
 
 
         #joudy
-        self.input_view = self.findChild(QGraphicsView, "inputGraphicsView")
-        self.output_view = self.findChild(QGraphicsView, "outputGraphicsView")
+        
         self.viewer_instance_tab1 = ImageViewer(self.hist_operations, None, self.input_view, self.output_view)
         self.viewer_instance_tab2 = ImageViewer(None, self.transformation_tab, self.inputRGB, self.outputGrey, index=1)
         self.viewer_instance =self.viewer_instance_tab1
@@ -115,9 +119,9 @@ class MainWindow(QMainWindow):
         self.hybrid_processor = HybridImage() 
         self.filtered_image1 = None
         self.filtered_image2 = None
-        self.filterimage1 = self.findChild(QGraphicsView, "graphicsView1")
-        self.filterimage2 = self.findChild(QGraphicsView, "graphicsView2")
-        self.filterimage_Out = self.findChild(QGraphicsView, "graphicsView3")
+        self.filterimage1 = self.findChild(QWidget, "image1")
+        self.filterimage2 = self.findChild(QWidget, "image2")
+        self.filterimage_Out = self.findChild(QWidget, "output")
         self.filter_select1 = self.findChild(QComboBox, "frequencyCombo1")
         self.filter_select2 = self.findChild(QComboBox, "frequencyCombo2")
         
@@ -132,24 +136,29 @@ class MainWindow(QMainWindow):
         self.sliderLabel1.setText(f"Cutoff: {0 }")
         self.sliderLabel2.setText(f"Cutoff: {0 }")
 
+       
 
+        self.radiusSlider1.setSingleStep(10)  
+        self.radiusSlider2.setSingleStep(10)  
 
         # Connect sliders to update function
-        self.radiusSlider1.valueChanged.connect(lambda: self.update_filter_cutoff(1))
-        self.radiusSlider2.valueChanged.connect(lambda: self.update_filter_cutoff(2))
+        self.radiusSlider1.valueChanged.connect(lambda: self.update_filter(1))
+        self.radiusSlider2.valueChanged.connect(lambda: self.update_filter(2))
 
         if self.filter_select1:
-            self.filter_select1.currentIndexChanged.connect(lambda: self.set_initial_cutoff(1))
+            self.filter_select1.currentIndexChanged.connect(lambda:self.update_filter(1))
 
         if self.filter_select2:
-            self.filter_select2.currentIndexChanged.connect(lambda: self.set_initial_cutoff(2))
+            self.filter_select2.currentIndexChanged.connect(lambda:self.update_filter(2))
 
 
         self.region1Widget = self.findChild(QWidget, "region1Widget")
         self.region2Widget = self.findChild(QWidget, "region2Widget")
 
-        self.image_viewer_freq1 = ImageViewer(self.hist_operations, self.filterimage1, self.filterimage_Out)
-        self.image_viewer_freq2 = ImageViewer(self.hist_operations, self.filterimage2, self.filterimage_Out)
+        self.image_viewer_freq1 = ImageViewer(self.hist_operations,None, self.filterimage1, self.filterimage_Out,index=2,img_num=1)
+        self.image_viewer_freq2 = ImageViewer(self.hist_operations,None, self.filterimage2, self.filterimage_Out,index=2,img_num=2)
+        signal_manager.new_image_loaded.connect(self.reset_ui_for_new_image)
+
         self.hybird_button.clicked.connect(self.apply_hybird)
 
        
@@ -158,6 +167,9 @@ class MainWindow(QMainWindow):
             self.viewer_instance = self.viewer_instance_tab1  # Use existing instance
         elif index == 1:
             self.viewer_instance = self.viewer_instance_tab2  # Use existing instance
+        elif index==2:
+            self.viewer_instance1= self.image_viewer_freq1
+            self.viewer_instance2= self.image_viewer_freq2
 
     def apply_edge_detector(self,img,index):
         self.viewer_instance.display_output_image(self.edge_detector.apply_filter(img,index))
@@ -299,7 +311,7 @@ class MainWindow(QMainWindow):
 
 
 
-         #hajar
+    #hajar
     def apply_frequency_filter(self, img_num,cutoff):
         """Apply selected filter dynamically when an image is loaded or when the user changes the combo box."""
         cutoff=cutoff
@@ -327,29 +339,32 @@ class MainWindow(QMainWindow):
                 filter_obj = FrequencyFilter(img_data)
                 self.filtered_image2, mask_image2 = filter_obj.apply_filter(filter_type, cutoff)
                 self.image_viewer_freq2.apply_filtered_image(self.filtered_image2, freq=filter_type)
-            self.display_mask_in_widget(self.region2Widget, mask_image2)
 
             if self.hybrid_processor is None:
                 self.hybrid_processor = HybridImage(None, self.filtered_image2)
             else:
                 self.hybrid_processor.img2 = self.filtered_image2  
            
+            self.display_mask_in_widget(self.region2Widget, mask_image2)
 
 
     def apply_hybird(self):
 
-        
         if self.hybrid_processor and self.hybrid_processor.img1 is not None and self.hybrid_processor.img2 is not None:
              self.display_hybrid_image()
 
     def get_selected_filter(self, combo_box):
         """Get selected filter type ('low' or 'high') from the combo box."""
         selected_text = combo_box.currentText().lower()
-        print (selected_text)
+       # print (selected_text)
         return 'low pass' if "low pass" in selected_text else 'high pass'
 
     def display_mask_in_widget(self, widget, image):
      """Display a NumPy mask inside the given QWidget."""
+     if image is None:
+            if hasattr(widget, "label"):
+                widget.label.clear()
+            return
      height, width = image.shape
      bytes_per_line = width
      q_image = QImage(image.data, width, height, bytes_per_line, QImage.Format_Grayscale8)
@@ -364,13 +379,13 @@ class MainWindow(QMainWindow):
      widget.label.show()
 
 
-    def update_filter_cutoff(self, img_num):
+    def update_filter(self, img_num):
      """Update the cutoff frequency when the slider is moved and reapply filtering."""
     
      if img_num == 1:
        
 
-        new_cutoff = self.radiusSlider1.value()
+        new_cutoff = round(self.radiusSlider1.value() / 10) * 10 
         self.sliderLabel1.setText(f"Cutoff: {new_cutoff} Hz")
 
         # Reapply filter with updated cutoff
@@ -378,23 +393,13 @@ class MainWindow(QMainWindow):
 
      elif img_num == 2:
        
-        new_cutoff = self.radiusSlider2.value()
+        new_cutoff = round(self.radiusSlider2.value() / 10) * 10
         self.sliderLabel2.setText(f"Cutoff: {new_cutoff} Hz")
 
         # Reapply filter with updated cutoff
         self.apply_frequency_filter(img_num, new_cutoff)
 
-    def set_initial_cutoff(self, img_num):
-        """Set initial cutoff value when selecting a filter from the combo box."""
-        if img_num == 1 and self.radiusSlider1 and self.sliderLabel1:
-            self.radiusSlider1.setValue(self.initial_cutoff)
-            self.sliderLabel1.setText(f"Cutoff: {self.initial_cutoff} Hz")
-            self.apply_frequency_filter(1, self.initial_cutoff)
-
-        elif img_num == 2 and self.radiusSlider2 and self.sliderLabel2:
-            self.radiusSlider2.setValue(self.initial_cutoff)
-            self.sliderLabel2.setText(f"Cutoff: {self.initial_cutoff} Hz")
-            self.apply_frequency_filter(2, self.initial_cutoff)
+   
 
 
     def display_hybrid_image(self):
@@ -404,6 +409,36 @@ class MainWindow(QMainWindow):
      if hybrid_result is not None:
         self.image_viewer_freq1.display_output_image(hybrid_result, self.filterimage_Out)
 
+
+
+
+
+    def reset_ui_for_new_image(self, img_num):
+        """ Reset slider and mask when a new image is loaded. """
+        if img_num == 1:
+            self.radiusSlider1.blockSignals(True)
+            self.filter_select1.blockSignals(True)
+            self.radiusSlider1.setValue(30)
+            cutoff1 = self.radiusSlider1.value()   # Reset slider to 0
+            self.sliderLabel1.setText(f"Cutoff: {cutoff1} Hz")
+            self.filter_select1.setCurrentIndex(1)  
+            self.radiusSlider1.blockSignals(False)
+            self.filter_select1.blockSignals(False)
+
+            self.apply_frequency_filter(1,cutoff1)
+        elif img_num == 2:
+            self.radiusSlider2.blockSignals(True)
+            self.filter_select2.blockSignals(True)
+
+            self.radiusSlider2.setValue(30)
+            cutoff2 = self.radiusSlider2.value() 
+            self.sliderLabel2.setText(f"Cutoff: {cutoff2} Hz")
+            self.filter_select2.setCurrentIndex(2) 
+            self.radiusSlider2.blockSignals(False)
+            self.filter_select2.blockSignals(False)
+
+
+            self.apply_frequency_filter(2,cutoff2)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

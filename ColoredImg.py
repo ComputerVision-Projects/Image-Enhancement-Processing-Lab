@@ -12,13 +12,11 @@ class ColoredImg:
       
     def convert_to_grayscale(self):
         #I=0.2989R+0.5870G+0.1140B 
-        
+
         gray_img = (self.R.astype(np.float32) * 0.2989 +
-                    self.G.astype(np.float32) * 0.5870 +
-                    self.B.astype(np.float32) * 0.1140)
-
+            self.G.astype(np.float32) * 0.5870 +
+            self.B.astype(np.float32) * 0.1140)
         gray_img = np.clip(gray_img, 0, 255).astype(np.uint8)
-
         return gray_img
     
     # def histogram_channels(self,):
