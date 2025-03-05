@@ -11,8 +11,6 @@ class EdgeDetectors:
 
     def apply_filter(self,img,detector_type):
         pad_image=self.image_padding(img) 
-        if detector_type==0:
-            pass
         if detector_type==1:
            return self.sobel_detector(pad_image)
         
