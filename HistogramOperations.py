@@ -85,6 +85,17 @@ class HistogramOperations:
             ax.set_xlim(0,1)
         ax.legend()
 
+        figure.patch.set_facecolor('black')  # Set figure background color
+        ax.set_facecolor('black')  # Set axes background color
+        ax.spines['bottom'].set_color('white')  # Change axis spines to white
+        ax.spines['left'].set_color('white')
+        ax.xaxis.label.set_color('white')  # Set x-axis label color
+        ax.yaxis.label.set_color('white')  # Set y-axis label color
+        ax.title.set_color('white')  # Set title color
+        ax.tick_params(axis='x', colors='white')  # Set x-axis tick color
+        ax.tick_params(axis='y', colors='white')  # Set y-axis tick color
+        ax.legend(facecolor='black', edgecolor='white', labelcolor='white')  # Set legend colors
+
         #embed it into canvas
         canvas= FigureCanvas(figure)
         layout = parent_widget.layout()
