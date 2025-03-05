@@ -47,19 +47,22 @@ class HistogramOperations:
         assert cdf.shape == bins.shape, f"Shape mismatch: {cdf.shape} vs {bins.shape}"
         return bins, cdf
 
-    def show_plots(self, img_data=None, key=None):
+    def show_plots(self, img_data=None, key=None, color='red'):
         if img_data is None:
-            img_data= self.image_data
-        if key=='normalize':
-            key2='normalize'
+            img_data = self.image_data
+        if key == 'normalize':
+            key2 = 'normalize'
         else:
-            key2 =None
-        bins, histogram= self.get_histogram(img_data, key)
-        self.plot_histogram(bins, histogram,self.widget1, key_show='histogram', key2=key2)
-        x_values, pdf= self.get_distribution_curve(bins, histogram)
-        self.plot_histogram(x_values, pdf, self.widget2, key_show='distribution')
+            key2 = None
 
-    def plot_histogram(self, bins, histogram, parent_widget, key_show='histogram', key2=None):
+        bins, histogram = self.get_histogram(img_data, key)
+        self.plot_histogram(bins, histogram, self.widget1, key_show='histogram', key2=key2, channel=color)
+
+        x_values, pdf = self.get_distribution_curve(bins, histogram)
+        self.plot_histogram(x_values, pdf, self.widget2, key_show='distribution', channel=color)
+
+
+    def plot_histogram(self, bins, histogram, parent_widget, key_show='histogram', key2=None, channel='blue'):
         if parent_widget is None:
             print("Error: parent_widget is None. Cannot plot histogram.")
             return
@@ -73,10 +76,10 @@ class HistogramOperations:
                     item.widget().deleteLater()  # Delete the old canvas
 
         if key_show=='histogram':
-            ax.bar(histogram, bins, label='Histogram')
+            ax.bar(histogram, bins, color=channel, label='Histogram')
         else:
             #bins and histogram here means bins and pdf values
-            ax.plot(histogram, bins, color='red', linewidth=2, label="CDF")
+            ax.plot(histogram, bins, color=channel, linewidth=2, label="CDF")
 
         ax.set_xlabel("Pixel Intensity")
         ax.set_ylabel("Frequency")

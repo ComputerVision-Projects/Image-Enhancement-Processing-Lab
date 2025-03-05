@@ -27,9 +27,9 @@ class ColoredImg:
     #     return histR, binsR, histG, binsG, histB, binsB
     
     def plot_histograms(self,):
-        self.HistogramR.show_plots(self.R)
-        self.HistogramG.show_plots(self.G)
-        self.HistogramB.show_plots(self.B)
+        self.HistogramR.show_plots(self.R, color='red')
+        self.HistogramG.show_plots(self.G, color='green')
+        self.HistogramB.show_plots(self.B, color='blue')
     
     def set_colored_img(self, colored_img):
         print("set image")
