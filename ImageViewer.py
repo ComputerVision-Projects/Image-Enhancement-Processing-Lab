@@ -89,17 +89,17 @@ class ImageViewer(QWidget):
             print("Invalid image data.")
             return
 
-        if len(img.shape) == 3:  
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-        height, width = img.shape
-        bytes_per_line = width
-
+        if len(img.shape) == 2:  # Grayscale image
+            height, width = img.shape
+            bytes_per_line = width  # For grayscale, bytes_per_line = width
+            q_image = QImage(img.data, width, height, bytes_per_line, QImage.Format_Grayscale8)
+        elif len(img.shape) == 3:  # RGB image
+            height, width, channels = img.shape
+            bytes_per_line = width * channels  # For RGB, bytes_per_line = width * 3
+            q_image = QImage(img.data, width, height, bytes_per_line, QImage.Format_Grayscale)
        
 
        
-        q_image = QImage(img.data, width, height, bytes_per_line, QImage.Format_Grayscale8)
-
         if q_image.isNull():
             print("Failed to create QImage.")
             return

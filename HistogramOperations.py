@@ -13,9 +13,13 @@ class HistogramOperations:
         self.widget1= widget1 #histogran widget
         self.widget2= widget2 #distribution curve widget
         
-    def get_histogram(self, img,):
+    def get_histogram(self, img, key=None):
        # Compute histogram (256 values) and bin edges (257 values)
-        histogram, bins = np.histogram(img, bins=256, range=(0, 256))
+        if key =='normalize':
+            rangee=(0,1)
+        else:
+            rangee =(0,256)
+        histogram, bins = np.histogram(img, bins=256, range=rangee)
         # Ensure both have 256 elements
         if bins.shape[0] != histogram.shape[0]:  
             bins = bins[:-1]  # Remove the last bin edge to match histogram size
@@ -43,15 +47,19 @@ class HistogramOperations:
         assert cdf.shape == bins.shape, f"Shape mismatch: {cdf.shape} vs {bins.shape}"
         return bins, cdf
 
-    def show_plots(self, img_data=None):
+    def show_plots(self, img_data=None, key=None):
         if img_data is None:
             img_data= self.image_data
-        bins, histogram= self.get_histogram(img_data)
-        self.plot_histogram(bins, histogram,self.widget1)
+        if key=='normalize':
+            key2='normalize'
+        else:
+            key2 =None
+        bins, histogram= self.get_histogram(img_data, key)
+        self.plot_histogram(bins, histogram,self.widget1, key_show='histogram', key2=key2)
         x_values, pdf= self.get_distribution_curve(bins, histogram)
         self.plot_histogram(x_values, pdf, self.widget2, key_show='distribution')
 
-    def plot_histogram(self, bins, histogram, parent_widget, key_show='histogram'):
+    def plot_histogram(self, bins, histogram, parent_widget, key_show='histogram', key2=None):
         if parent_widget is None:
             print("Error: parent_widget is None. Cannot plot histogram.")
             return
@@ -65,14 +73,16 @@ class HistogramOperations:
                     item.widget().deleteLater()  # Delete the old canvas
 
         if key_show=='histogram':
-            ax.bar(bins, histogram, label='Histogram')
+            ax.bar(histogram, bins, label='Histogram')
         else:
             #bins and histogram here means bins and pdf values
-            ax.plot(bins,  histogram, color='red', linewidth=2, label="CDF")
+            ax.plot(histogram, bins, color='red', linewidth=2, label="CDF")
 
         ax.set_xlabel("Pixel Intensity")
         ax.set_ylabel("Frequency")
         ax.set_title("Histogram & Distribution")
+        if key2 =='normalize':
+            ax.set_xlim(0,1)
         ax.legend()
 
         #embed it into canvas
@@ -108,8 +118,10 @@ class HistogramOperations:
         if max_val - min_val == 0:
             return np.zeros_like(self.image_data, dtype=np.float32)
     
-        image_data_normalized =((self.image_data - min_val) / (max_val - min_val))
-        self.show_plots(image_data_normalized)
+        image_data_normalized =((self.image_data - min_val) / (max_val - min_val)).astype(np.float32)
+         
+        #image_data_normalized= cv2.normalize(self.image_data,None, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
+        self.show_plots(image_data_normalized, key='normalize')
         return image_data_normalized
 
     def set_image(self, image_data):

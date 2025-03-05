@@ -76,7 +76,7 @@ QTabBar::tab:selected {
                <property name="leftMargin">
                 <number>9</number>
                </property>
-               <item row="0" column="0">
+               <item row="0" column="1">
                 <layout class="QVBoxLayout" name="verticalLayout_64">
                  <property name="leftMargin">
                   <number>0</number>
@@ -127,7 +127,7 @@ border: none;</string>
                  <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_40">
                    <item>
-                    <layout class="QVBoxLayout" name="verticalLayout_65" stretch="0,0">
+                    <layout class="QVBoxLayout" name="verticalLayout_65" stretch="0">
                      <item>
                       <widget class="QWidget" name="inputImage" native="true">
                        <property name="minimumSize">
@@ -142,56 +142,6 @@ background-color: #1f1f1f;</string>
                        </property>
                       </widget>
                      </item>
-                     <item>
-                      <spacer name="horizontalSpacer">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </item>
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_55">
-                   <item>
-                    <layout class="QVBoxLayout" name="verticalLayout_87" stretch="0,5">
-                     <item>
-                      <widget class="QGroupBox" name="groupBox_14">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="styleSheet">
-                        <string notr="true">color: #ffffff;
-font-weight:Bold;
-font-size: 15px;
-border:none;
-</string>
-                       </property>
-                       <property name="title">
-                        <string>Histogram:</string>
-                       </property>
-                       <layout class="QGridLayout" name="gridLayout_26"/>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QWidget" name="histogramWidget_5" native="true">
-                       <property name="styleSheet">
-                        <string notr="true">background-color: #1f1f1f;
-border:none;</string>
-                       </property>
-                      </widget>
-                     </item>
                     </layout>
                    </item>
                   </layout>
@@ -200,6 +150,86 @@ border:none;</string>
                </item>
               </layout>
              </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="Line" name="line">
+              <property name="styleSheet">
+               <string notr="true">/* Line style */
+
+  /* Set the width of the line */
+  width: 20px;
+
+  /* Set the height of the line */
+  height: 5px;
+
+  /* Set the background color of the line */
+  background-color:#a8abaf;
+
+  /* Set the border of the line */
+  border: 10px;
+
+  /* Set the border radius of the line */
+  border-radius:5px;
+
+
+
+
+</string>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_55">
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_87" stretch="0,5">
+                <item>
+                 <widget class="QGroupBox" name="groupBox_14">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">color: #ffffff;
+font-weight:Bold;
+font-size: 15px;
+border:none;
+</string>
+                  </property>
+                  <property name="title">
+                   <string>Histogram:</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_26"/>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QWidget" name="histogramWidget_5" native="true">
+                  <property name="styleSheet">
+                   <string notr="true">background-color: #1f1f1f;
+border:none;</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>
@@ -906,6 +936,11 @@ color:#ffffff;
 
 }</string>
                           </property>
+                          <item>
+                           <property name="text">
+                            <string>None</string>
+                           </property>
+                          </item>
                           <item>
                            <property name="text">
                             <string>Sobel</string>
@@ -2571,20 +2606,6 @@ background-color: #1f1f1f;</string>
                      <item>
                       <layout class="QVBoxLayout" name="verticalLayout_3">
                        <item>
-                        <widget class="QLabel" name="label_6">
-                         <property name="styleSheet">
-                          <string notr="true">color: #ffffff;
-font-weight:Bold;
-font-size: 13px;
-border: none;
-</string>
-                         </property>
-                         <property name="text">
-                          <string>Choose the filter:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
                         <layout class="QHBoxLayout" name="horizontalLayout_10">
                          <item>
                           <spacer name="horizontalSpacer_13">
@@ -2630,6 +2651,11 @@ color:#ffffff;
 
 }</string>
                            </property>
+                           <item>
+                            <property name="text">
+                             <string>Choose Filter</string>
+                            </property>
+                           </item>
                            <item>
                             <property name="text">
                              <string>High pass</string>
@@ -2756,20 +2782,6 @@ background-color: #1f1f1f;</string>
                      <item>
                       <layout class="QVBoxLayout" name="verticalLayout_5">
                        <item>
-                        <widget class="QLabel" name="label_4">
-                         <property name="styleSheet">
-                          <string notr="true">color: #ffffff;
-font-weight:Bold;
-font-size: 13px;
-border: none;
-</string>
-                         </property>
-                         <property name="text">
-                          <string>Choose the filter:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
                         <layout class="QHBoxLayout" name="horizontalLayout_9">
                          <item>
                           <spacer name="horizontalSpacer_11">
@@ -2815,6 +2827,11 @@ color:#ffffff;
 
 }</string>
                            </property>
+                           <item>
+                            <property name="text">
+                             <string>Choose Filter</string>
+                            </property>
+                           </item>
                            <item>
                             <property name="text">
                              <string>High pass</string>
