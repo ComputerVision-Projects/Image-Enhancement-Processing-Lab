@@ -47,7 +47,7 @@ class HistogramOperations:
         assert cdf.shape == bins.shape, f"Shape mismatch: {cdf.shape} vs {bins.shape}"
         return bins, cdf
 
-    def show_plots(self, img_data=None, key=None, color='red'):
+    def show_plots(self, img_data=None, key=None, color='#5c8bbc'):
         if img_data is None:
             img_data = self.image_data
         if key == 'normalize':
@@ -62,7 +62,7 @@ class HistogramOperations:
         self.plot_histogram(x_values, pdf, self.widget2, key_show='distribution', channel=color)
 
 
-    def plot_histogram(self, bins, histogram, parent_widget, key_show='histogram', key2=None, channel='blue'):
+    def plot_histogram(self, bins, histogram, parent_widget, key_show='histogram', key2=None, channel='#7493bc'):
         if parent_widget is None:
             print("Error: parent_widget is None. Cannot plot histogram.")
             return
