@@ -3,3 +3,4 @@ testhybrid
 __pycache__
 standard images
 *.pyc
+test_edgedetector.py

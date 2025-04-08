@@ -3,9 +3,6 @@ from scipy.interpolate import interp1d
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
-from scipy.stats import gaussian_kde
-import cv2
-
 
 class HistogramOperations:
     def __init__(self, widget1, widget2):
