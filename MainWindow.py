@@ -444,5 +444,5 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
-    # window.showMaximized()
+    window.showMaximized()
     sys.exit(app.exec_())

@@ -11,13 +11,13 @@ class EdgeDetectors:
 
     def apply_filter(self,img,detector_type):
         pad_image=self.image_padding(img) 
-        if detector_type==0:
+        if detector_type==1:
            return self.sobel_detector(pad_image)
         
-        elif detector_type==1:
+        elif detector_type==2:
             return self.roberts_detector(pad_image)
         
-        elif detector_type==2:
+        elif detector_type==3:
             return self.perwitt_detector(pad_image)
         
         else:
