@@ -3,14 +3,40 @@ from scipy.interpolate import interp1d
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
+from scipy.stats import gaussian_kde
+import cv2
+
 
 class HistogramOperations:
+    """
+    This class performs histogram-related operations on images, including:
+    - Histogram computation
+    - Distribution curve generation (CDF, KDE, Interpolation)
+    - Histogram plotting
+    - Histogram equalization
+    - Image normalization
+    - Global and local thresholding
+    """
     def __init__(self, widget1, widget2):
+        """
+        Initializes the HistogramOperations class.
+        
+        :param widget1: QWidget for displaying histogram.
+        :param widget2: QWidget for displaying distribution curve.
+        """
         self.image_data=None
         self.widget1= widget1 #histogran widget
         self.widget2= widget2 #distribution curve widget
         
     def get_histogram(self, img, key=None):
+
+        """
+        Computes the histogram of an image.
+        
+        :param img: Input image.
+        :param key: If 'normalize', sets range to (0,1), else (0,256).
+        :return: Tuple (histogram, bins) where histogram contains pixel frequencies and bins contain bin edges.
+        """
        # Compute histogram (256 values) and bin edges (257 values)
         if key =='normalize':
             rangee=(0,1)
@@ -25,6 +51,15 @@ class HistogramOperations:
         return histogram, bins
     
     def get_distribution_curve(self, bins, histogram):
+
+        """
+        Computes the cumulative distribution function (CDF) of the histogram.
+        Alternative methods (KDE, interpolation) are commented out.
+        
+        :param bins: Bin edges.
+        :param histogram: Histogram values.
+        :return: (bins, CDF values)
+        """
         #one method is interpolation
         # Compute bin centers
         # bin_centers = (bins[:-1] + bins[1:]) / 2
@@ -44,7 +79,14 @@ class HistogramOperations:
         assert cdf.shape == bins.shape, f"Shape mismatch: {cdf.shape} vs {bins.shape}"
         return bins, cdf
 
-    def show_plots(self, img_data=None, key=None, color='#5c8bbc'):
+    def show_plots(self, img_data=None, key=None, color='red'):
+        """
+        Displays histogram and distribution curve plots.
+        
+        :param img_data: Image data (default: stored image data).
+        :param key: Determines whether to normalize data.
+        :param color: Color for the plots.
+        """
         if img_data is None:
             img_data = self.image_data
         if key == 'normalize':
@@ -59,7 +101,17 @@ class HistogramOperations:
         self.plot_histogram(x_values, pdf, self.widget2, key_show='distribution', channel=color)
 
 
-    def plot_histogram(self, bins, histogram, parent_widget, key_show='histogram', key2=None, channel='#7493bc'):
+    def plot_histogram(self, bins, histogram, parent_widget, key_show='histogram', key2=None, channel='blue'):
+        """
+        Plots histogram or distribution curve inside a given parent widget.
+        
+        :param bins: Bin edges.
+        :param histogram: Histogram or CDF values.
+        :param parent_widget: QWidget where the plot is displayed.
+        :param key_show: Determines plot type ('histogram' or 'distribution').
+        :param key2: If 'normalize', adjusts x-axis limits.
+        :param channel: Color of the plot.
+        """
         if parent_widget is None:
             print("Error: parent_widget is None. Cannot plot histogram.")
             return
@@ -107,6 +159,11 @@ class HistogramOperations:
         canvas.draw()
         
     def equalize_histogram(self):
+        """
+        Performs histogram equalization on the stored image.
+        
+        :return: Equalized image.
+        """
         histogram, _ = self.get_histogram(self.image_data)
         #compute CDF from histogram
         histogram_cdf=  histogram.cumsum()
@@ -122,6 +179,11 @@ class HistogramOperations:
         return image_data_equalized
 
     def normalize(self):
+        """
+        Normalizes the stored image to the range [0,1].
+        
+        :return: Normalized image.
+        """
         min_val = self.image_data.min()
         max_val = self.image_data.max()
         
@@ -136,14 +198,23 @@ class HistogramOperations:
         return image_data_normalized
 
     def set_image(self, image_data):
+        """
+        Sets the image data for processing.
+        """
         self.image_data= image_data
     
 
     def global_threshold(self):
+        """
+        Applies global thresholding based on mean intensity.
+        """
         threshold_value = np.mean(self.image_data)  # Set threshold dynamically
         return np.where(self.image_data > threshold_value, 255, 0).astype(np.uint8)
     
     def local_threshold(self, block_size=11, C= 4): #adaptive thresholding, C-->Threshold Offset
+        """
+        Applies adaptive local thresholding with block-wise mean adjustment.
+        """
         height, width = self.image_data.shape
         binary_image = np.zeros_like(self.image_data)  # Output image
 
