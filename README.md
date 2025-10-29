@@ -13,12 +13,19 @@ This project is a modular GUI application for image processing, supporting both 
 - **Thresholding**: Global and Local methods.
 - **Histogram Operations**: Equalization and normalization.
 
+<p align="center">
+  <img src="project ouptuts/tab1_demo.gif" alt="Application Demo" width="700">
+</p>
+<p align="center">
+  <em>Figure: Demonstration of the Tab1</em>
+</p>
+
 ### 2. Transformation to Grayscale
 - Convert RGB images to grayscale.
 - Display histograms and distribution curves for each RGB channel.
 
 <p align="center">
-  <img src="project_outputs/RGB_Gray.png" alt="Tab Demo" width="600">
+  <img src="project ouptuts/RGB_Gray.JPG" alt="Tab Demo" width="600">
 </p>
 
 ### 3. Frequency Domain Filters
