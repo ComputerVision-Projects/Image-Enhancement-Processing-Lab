@@ -17,6 +17,9 @@ This project is a modular GUI application for image processing, supporting both 
 - Convert RGB images to grayscale.
 - Display histograms and distribution curves for each RGB channel.
 
+ ![GUI Example](project_outputs/RGB_Gray.png)
+
+
 ### 3. Frequency Domain Filters
 - Combine two images to create a hybrid image using frequency-based filtering.
 - Apply low-pass or high-pass filters with adjustable cutoff radius.
